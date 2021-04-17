@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -38,7 +40,7 @@ class FirstRoute extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SecondRoute()),
+                          MaterialPageRoute(builder: (context) => new firstQueryResponse()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -56,7 +58,7 @@ class FirstRoute extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SecondRoute()),
+                          MaterialPageRoute(builder: (context) => new firstQueryResponse()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -74,7 +76,7 @@ class FirstRoute extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SecondRoute()),
+                          MaterialPageRoute(builder: (context) => new firstQueryResponse()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -88,52 +90,77 @@ class FirstRoute extends StatelessWidget {
   }
 }
 
-class SecondRoute extends StatelessWidget {
+// ignore: camel_case_types
+class firstQueryResponse extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Second Route"),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('Go back!'),
-        ),
-      ),
-    );
-  }
+  createState() => new firstQueryState();
 }
 
-/*
-class _MyAppState extends State<MyApp> {
-  late GoogleMapController mapController;
-
-  final LatLng _center = const LatLng(41.667014734720674, 26.57641431196044);
-
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-  }
+// ignore: camel_case_types
+class firstQueryState extends State<firstQueryResponse> {
+  var _randomQuote = '-';
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Maps'),
-          backgroundColor: Colors.green[700],
-        ),
-        body: GoogleMap(
-          onMapCreated: _onMapCreated,
-          initialCameraPosition: CameraPosition(
-            target: _center,
-            zoom: 11.0,
+    var spacer = new SizedBox(height: 32.0);
+
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('Famous Quotes'),
+      ),
+      body: new Center(
+
+        child : new Padding(
+          padding: new EdgeInsets.all(20.0),
+          child : new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Text(_randomQuote,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 12.toDouble())),
+              spacer,
+              spacer,
+              new ElevatedButton(
+                onPressed: _getRandomQuote,
+                child: new Text('Get a Random Quote'),
+              ),
+            ],
           ),
         ),
       ),
     );
-  }
 }
-*/
+
+
+_getRandomQuote() async {
+  var url = 'https://us-central1-heroic-muse-310011.cloudfunctions.net/firstQuery';
+  var httpClient = new HttpClient();
+
+  String result="";
+  try {
+    var request = await httpClient.getUrl(Uri.parse(url));
+    var response = await request.close();
+    if (response.statusCode == HttpStatus.ok) {
+      var jsonResponse = await response.transform(utf8.decoder).join();
+      var newResponse = jsonResponse.substring(1,jsonResponse.length-1);
+      print(newResponse);
+      var data = json.decode(newResponse);
+
+      for(var i=0; i<5; i++){
+        var pickup = data[i]['tpep_pickup_datetime'].toString();
+        var passCount = data[i]['passenger_count'].toString();
+        var line = pickup + " - " + passCount + "\n";
+        result = result + line;
+      }
+
+    } else {
+      result =
+      'Error getting a random quote:\nHttp status ${response.statusCode}';
+    }
+  } catch (exception) {
+    result = 'Failed invoking the getRandomQuote function.';
+  }
+
+  setState(() {
+    _randomQuote = result;
+  });
+}
+}
