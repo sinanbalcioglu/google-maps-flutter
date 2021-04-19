@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 
@@ -78,7 +79,7 @@ class FirstRoute extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => new firstQueryResponse()),
+                          MaterialPageRoute(builder: (context) => new thirdQueryInput()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -217,8 +218,8 @@ class _sqIState extends State<secondQueryInput>{
                     showDatePicker(
                         context: context,
                         initialDate: DateTime(2020,12),
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2021)
+                        firstDate: DateTime(2020,12),
+                        lastDate: DateTime(2020,12,31)
                     ).then((date){
                       setState(() {
                         _dateTime1 = date;
@@ -235,8 +236,8 @@ class _sqIState extends State<secondQueryInput>{
                     showDatePicker(
                         context: context,
                         initialDate: DateTime(2020,12),
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2021)
+                        firstDate: DateTime(2020,12),
+                        lastDate: DateTime(2020,12,31)
                     ).then((date){
                       setState(() {
                         _dateTime2 = date;
@@ -360,4 +361,177 @@ class _sQRState extends State<secondQueryResult> {
       _queryResult = result;
     });
   }
+}
+
+class thirdQueryInput extends StatefulWidget {
+  @override
+  createState() => new _tqIState();
+}
+
+class _tqIState extends State<thirdQueryInput>{
+  DateTime? _dateTime1;
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        backgroundColor: Colors.amber,
+        title: Text(''),
+      ),
+      body: Center(
+        child : Column(
+            children: <Widget>[
+              Container(
+                child: Padding(
+                    padding: EdgeInsets.fromLTRB(20, 50, 20, 40) ,
+                    child: Column(
+                      children: <Widget>[
+                        Text("Belirli bir günde en uzun seyahatin harita üstünde yolunu çiziniz", textAlign: TextAlign.center ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
+                      ],
+                    )
+                ),
+              ),
+              Container(
+                child: Column(
+                  children: <Widget>[
+                    ElevatedButton(
+                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.amber)),
+                      onPressed: (){
+                        showDatePicker(
+                            context: context,
+                            initialDate: DateTime(2020,12),
+                            firstDate: DateTime(2020,12),
+                            lastDate: DateTime(2020,12,31)
+                        ).then((date){
+                          setState(() {
+                            _dateTime1 = date;
+                            timestamp1 = (date!.microsecondsSinceEpoch/1000000).round();
+                            print(timestamp1);
+                          });
+                        });
+                      },
+                      child: Text(_dateTime1 == null ? 'Tarih Seç' : _dateTime1.toString(), style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(20, 50, 20, 40) ,
+                  child: Column(
+                    children: <Widget>[
+                      ElevatedButton(
+                        style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.black)),
+                        onPressed: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => new thirdQueryResult()),
+                          );
+                        },
+                        child: Text('Sorgula!', textAlign: TextAlign.center ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.toDouble())),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ]),
+      ),
+    );
+  }
+}
+
+class thirdQueryResult extends StatefulWidget {
+  @override
+  createState() => new _tQRState();
+}
+
+// ignore: camel_case_types
+class _tQRState extends State<thirdQueryResult> {
+  List<LatLng>? _queryResult;
+
+  @override
+  void initState() {
+    super.initState();
+    _getThirdQueryResult();
+  }
+
+  final Map<String, Marker> _markers = {};
+  final Set<Polyline> polyline = {};
+
+  late GoogleMapController _controller;
+  late List<LatLng> routeCoords;
+  GoogleMapPolyline googleMapPolyline = new GoogleMapPolyline(apiKey: "AIzaSyAN48rdEQUTxb6vdwOEYFsXuKEEEA6odDU");
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Third Query Result'),
+          backgroundColor: Colors.amber,
+        ),
+        body: GoogleMap(
+          myLocationButtonEnabled: false,
+          initialCameraPosition: CameraPosition(
+            target: LatLng(40.62861224,-73.98956041),
+            zoom: 8,
+          ),
+          markers: _markers.values.toSet(),
+          polylines: polyline,
+        ),
+      ),
+    );
+  }
+
+
+  _getThirdQueryResult() async {
+    timestamp2 = timestamp1+86400;
+    var startDate = timestamp1.toString();
+    var endDate = timestamp2.toString();
+    var url = 'https://us-central1-heroic-muse-310011.cloudfunctions.net/thirdQuery?startDate='+startDate+'&endDate='+endDate;
+    var httpClient = new HttpClient();
+
+    List<LatLng> markerList = [];
+    var request = await httpClient.getUrl(Uri.parse(url));
+    var response = await request.close();
+    if (response.statusCode == HttpStatus.ok) {
+        var jsonResponse = await response.transform(utf8.decoder).join();
+        var newResponse = jsonResponse.substring(1,jsonResponse.length-1);
+        print(newResponse);
+        var data = json.decode(newResponse);
+        markerList.add(new LatLng(data[0]['latitude'], data[0]['longitude']));
+        print(data[0]['latitude']);
+        print(data[0]['longitude']);
+        print(data[1]['latitude']);
+        print(data[1]['longitude']);
+        markerList.add(new LatLng(data[1]['latitude'], data[1]['longitude']));
+
+        routeCoords = await googleMapPolyline.getCoordinatesWithLocation(
+            origin: markerList[0],
+            destination: markerList[1],
+            mode: RouteMode.driving);
+    setState(() {
+      _queryResult = markerList;
+      var i=0;
+      for (final location in _queryResult!) {
+        var index = i.toString();
+        final marker = Marker(
+          markerId: MarkerId(index),
+          position: location,
+        );
+        _markers[index] = marker;
+        i = i+1;
+      }
+
+      polyline.add(Polyline(
+          polylineId: PolylineId('route1'),
+          visible: true,
+          points: routeCoords,
+          width: 4,
+          color: Colors.blue,
+          startCap: Cap.roundCap,
+          endCap: Cap.buttCap));
+    });
+  }
+}
 }
