@@ -1,3 +1,4 @@
+// @dart = 2.0
 import 'dart:io';
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -9,6 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 void main() {
   runApp(MaterialApp(
     title: 'Navigation Basics',
+    debugShowCheckedModeBanner: false,
     home: FirstRoute(),
   ));
 }
@@ -17,8 +19,10 @@ class FirstRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.amber,
+          backgroundColor: Colors.white,
         ),
         home: Scaffold(
           body: Center(
@@ -34,11 +38,13 @@ class FirstRoute extends StatelessWidget {
                   ),
                 ),
                 Container(
-                    margin: EdgeInsets.fromLTRB(20.0,50,20.0,0),
+                    margin: EdgeInsets.fromLTRB(20.0,50,20.0,10),
+                    height: 45,
+                    width: 240,
                     child: ElevatedButton(
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(50, 0, 50, 0),
-                        child: Text('Query 1'),
+                        padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        child: Text('First Query', style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.toDouble())),
                       ),
                       onPressed: () {
                         Navigator.push(
@@ -53,10 +59,13 @@ class FirstRoute extends StatelessWidget {
                       ),
                     )),
                 Container(
+                  height: 45,
+                  width: 240,
+                    margin: EdgeInsets.fromLTRB(0,0,0,10),
                     child: ElevatedButton(
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(50, 0, 50, 0),
-                        child: Text('Query 2'),
+                        padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        child: Text('Second Query', style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.toDouble())),
                       ),
                       onPressed: () {
                         Navigator.push(
@@ -71,10 +80,12 @@ class FirstRoute extends StatelessWidget {
                       ),
                     )),
                 Container(
+                    height: 45,
+                    width: 240,
                     child: ElevatedButton(
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(50, 0, 50, 0),
-                        child: Text('Query 3'),
+                        padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        child: Text('Third Query', style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.toDouble())),
                       ),
                       onPressed: () {
                         Navigator.push(
@@ -113,29 +124,29 @@ class firstQueryState extends State<firstQueryResponse> {
         title: Text('First Query Results'),
       ),
       body: Center(
-          child : Column(children: <Widget>[
-            Container(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 50, 20, 50) ,
-                child: Text("En fazla yolcu taşınan 5 gün ve toplam yolcu sayıları", textAlign: TextAlign.center ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
-              ),
+        child : Column(children: <Widget>[
+          Container(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(20, 50, 20, 50) ,
+              child: Text("Top 5 days which has the most passenger count", textAlign: TextAlign.center ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
             ),
-            Container(
-              child: Padding(
+          ),
+          Container(
+            child: Padding(
                 padding: EdgeInsets.fromLTRB(20, 0, 20, 20) ,
                 child: Column(children: <Widget>[
-                  Text("Tarih/Saat            Yolcu Sayısı", textAlign: TextAlign.left ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
+                  Text("Date/Passenger Count", textAlign: TextAlign.left ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.toDouble())),
                 ],
                 )
-              ),
             ),
-            Container(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                  child : Text(_queryResult,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
-                ),
-              )
-            ]),
+          ),
+          Container(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child : Text(_queryResult,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 18.toDouble())),
+            ),
+          )
+        ]),
       ),
     );
   }
@@ -160,9 +171,9 @@ class firstQueryState extends State<firstQueryResponse> {
         var data = json.decode(newResponse);
 
         for(var i=0; i<5; i++){
-          var pickup = (DateFormat('dd.MM.yyyy hh:mm aaa').format(DateTime.fromMillisecondsSinceEpoch(data[i]['tpep_pickup_datetime']*1000))).toString();
-          var passCount = data[i]['passenger_count'].toString();
-          var line = pickup + "     -    " + passCount + "\n\n";
+          var pickup = data[i]['dt']['value'].toString();
+          var passCount = data[i]['pc'].toString();
+          var line = pickup + "        " + passCount + "\n\n";
           result = result + line;
         }
 
@@ -187,7 +198,7 @@ class secondQueryInput extends StatefulWidget {
 
 var timestamp1,timestamp2;
 class _sqIState extends State<secondQueryInput>{
-  DateTime? _dateTime1,_dateTime2;
+  DateTime _dateTime1,_dateTime2;
 
   @override
   Widget build(BuildContext context) {
@@ -199,78 +210,78 @@ class _sqIState extends State<secondQueryInput>{
       body: Center(
         child : Column(
             children: <Widget>[
-          Container(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(20, 50, 20, 40) ,
-              child: Column(
-                children: <Widget>[
-                  Text("İki tarih arasında seyahat edilen en az mesafeli 5 yolculuk", textAlign: TextAlign.center ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
-              ],
-              )
-          ),
-          ),
-          Container(
-            child: Column(
-              children: <Widget>[
-                ElevatedButton(
-                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.amber)),
-                  onPressed: (){
-                    showDatePicker(
-                        context: context,
-                        initialDate: DateTime(2020,12),
-                        firstDate: DateTime(2020,12),
-                        lastDate: DateTime(2020,12,31)
-                    ).then((date){
-                      setState(() {
-                        _dateTime1 = date;
-                        timestamp1 = (date!.microsecondsSinceEpoch/1000000).round();
-                        print(timestamp1);
-                      });
-                    });
-                  },
-                  child: Text(_dateTime1 == null ? 'Başlangıç Tarihini Seç' : _dateTime1.toString()),
+              Container(
+                child: Padding(
+                    padding: EdgeInsets.fromLTRB(20, 50, 20, 40) ,
+                    child: Column(
+                      children: <Widget>[
+                        Text("5 trips that have least distance between selected dates", textAlign: TextAlign.center ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
+                      ],
+                    )
                 ),
-                ElevatedButton(
-                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.amber) ),
-                  onPressed: (){
-                    showDatePicker(
-                        context: context,
-                        initialDate: DateTime(2020,12),
-                        firstDate: DateTime(2020,12),
-                        lastDate: DateTime(2020,12,31)
-                    ).then((date){
-                      setState(() {
-                        _dateTime2 = date;
-                        timestamp2 = (date!.microsecondsSinceEpoch/1000000).round();
-                        print(timestamp2);
-                      });
-                    });
-                  },
-                  child: Text(_dateTime2 == null ? 'Bitiş Tarihini Seç' : _dateTime2.toString()),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(20, 50, 20, 40) ,
-              child: Column(
-                children: <Widget>[
-                  ElevatedButton(
-                    style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.black)),
-                    onPressed: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => new secondQueryResult()),
-                      );
-                    },
-                    child: Text('Sorgula!', textAlign: TextAlign.center ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.toDouble())),
-                  ),
-                ],
               ),
-            ),
-          ),
-        ]),
+              Container(
+                child: Column(
+                  children: <Widget>[
+                    ElevatedButton(
+                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.amber)),
+                      onPressed: (){
+                        showDatePicker(
+                            context: context,
+                            initialDate: DateTime(2020,12),
+                            firstDate: DateTime(2020,12),
+                            lastDate: DateTime(2020,12,31)
+                        ).then((date){
+                          setState(() {
+                            _dateTime1 = date;
+                            timestamp1 = (date.microsecondsSinceEpoch/1000000).round();
+                            print(timestamp1);
+                          });
+                        });
+                      },
+                      child: Text(_dateTime1 == null ? 'Choose Start Date' : _dateTime1.toString().substring(0,10),style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
+                    ),
+                    ElevatedButton(
+                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.amber) ),
+                      onPressed: (){
+                        showDatePicker(
+                            context: context,
+                            initialDate: DateTime(2020,12),
+                            firstDate: DateTime(2020,12),
+                            lastDate: DateTime(2020,12,31)
+                        ).then((date){
+                          setState(() {
+                            _dateTime2 = date;
+                            timestamp2 = (date.microsecondsSinceEpoch/1000000).round();
+                            print(timestamp2);
+                          });
+                        });
+                      },
+                      child: Text(_dateTime2 == null ? ' Choose End Date ' : _dateTime2.toString().substring(0,10), style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(20, 50, 20, 40) ,
+                  child: Column(
+                    children: <Widget>[
+                      ElevatedButton(
+                        style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.black)),
+                        onPressed: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => new secondQueryResult()),
+                          );
+                        },
+                        child: Text('See result!', textAlign: TextAlign.center ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ]),
       ),
     );
   }
@@ -298,14 +309,14 @@ class _sQRState extends State<secondQueryResult> {
           Container(
             child: Padding(
               padding: EdgeInsets.fromLTRB(20, 50, 20, 50) ,
-              child: Text("İki tarih arasında seyahat edilen en az mesafeli 5 yolculuk", textAlign: TextAlign.center ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
+              child: Text("5 trips that have least distance between selected dates", textAlign: TextAlign.center ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
             ),
           ),
           Container(
             child: Padding(
                 padding: EdgeInsets.fromLTRB(20, 0, 20, 20) ,
                 child: Column(children: <Widget>[
-                  Text("Tarih/Saat            Mesafe", textAlign: TextAlign.left ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
+                  Text("    Date/Time            Distance", textAlign: TextAlign.left ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 22.toDouble())),
                 ],
                 )
             ),
@@ -313,7 +324,7 @@ class _sQRState extends State<secondQueryResult> {
           Container(
             child: Padding(
               padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child : Text(_queryResult,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
+              child : Text(_queryResult,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 18.toDouble())),
             ),
           )
         ]),
@@ -344,8 +355,8 @@ class _sQRState extends State<secondQueryResult> {
 
         for(var i=0; i<5; i++){
           var pickup = (DateFormat('dd.MM.yyyy hh:mm aaa').format(DateTime.fromMillisecondsSinceEpoch(data[i]['tpep_pickup_datetime']*1000))).toString();
-          var passCount = data[i]['trip_distance'].toString();
-          var line = pickup + "     -    " + passCount + "\n\n";
+          var distance = data[i]['trip_distance'].toString();
+          var line = pickup + "     -    " + distance + " mi\n\n";
           result = result + line;
         }
 
@@ -369,7 +380,7 @@ class thirdQueryInput extends StatefulWidget {
 }
 
 class _tqIState extends State<thirdQueryInput>{
-  DateTime? _dateTime1;
+  DateTime _dateTime1;
 
   @override
   Widget build(BuildContext context) {
@@ -386,7 +397,7 @@ class _tqIState extends State<thirdQueryInput>{
                     padding: EdgeInsets.fromLTRB(20, 50, 20, 40) ,
                     child: Column(
                       children: <Widget>[
-                        Text("Belirli bir günde en uzun seyahatin harita üstünde yolunu çiziniz", textAlign: TextAlign.center ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
+                        Text("Draw the route on the map of the longest trip on a given day", textAlign: TextAlign.center ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
                       ],
                     )
                 ),
@@ -405,12 +416,12 @@ class _tqIState extends State<thirdQueryInput>{
                         ).then((date){
                           setState(() {
                             _dateTime1 = date;
-                            timestamp1 = (date!.microsecondsSinceEpoch/1000000).round();
+                            timestamp1 = (date.microsecondsSinceEpoch/1000000).round();
                             print(timestamp1);
                           });
                         });
                       },
-                      child: Text(_dateTime1 == null ? 'Tarih Seç' : _dateTime1.toString(), style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
+                      child: Text(_dateTime1 == null ? 'Choose Date' : _dateTime1.toString().substring(0,10), style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 24.toDouble())),
                     ),
                   ],
                 ),
@@ -428,7 +439,7 @@ class _tqIState extends State<thirdQueryInput>{
                             MaterialPageRoute(builder: (context) => new thirdQueryResult()),
                           );
                         },
-                        child: Text('Sorgula!', textAlign: TextAlign.center ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.toDouble())),
+                        child: Text('See result!', textAlign: TextAlign.center ,style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.toDouble())),
                       ),
                     ],
                   ),
@@ -447,7 +458,7 @@ class thirdQueryResult extends StatefulWidget {
 
 // ignore: camel_case_types
 class _tQRState extends State<thirdQueryResult> {
-  List<LatLng>? _queryResult;
+  List<LatLng> _queryResult;
 
   @override
   void initState() {
@@ -458,8 +469,8 @@ class _tQRState extends State<thirdQueryResult> {
   final Map<String, Marker> _markers = {};
   final Set<Polyline> polyline = {};
 
-  late GoogleMapController _controller;
-  late List<LatLng> routeCoords;
+  GoogleMapController _controller;
+  List<LatLng> routeCoords;
   GoogleMapPolyline googleMapPolyline = new GoogleMapPolyline(apiKey: "AIzaSyAN48rdEQUTxb6vdwOEYFsXuKEEEA6odDU");
 
   @override
@@ -470,15 +481,112 @@ class _tQRState extends State<thirdQueryResult> {
           title: const Text('Third Query Result'),
           backgroundColor: Colors.amber,
         ),
-        body: GoogleMap(
-          myLocationButtonEnabled: false,
-          initialCameraPosition: CameraPosition(
-            target: LatLng(40.62861224,-73.98956041),
-            zoom: 8,
-          ),
-          markers: _markers.values.toSet(),
-          polylines: polyline,
-        ),
+        body: Stack(
+          children: <Widget>[
+            GoogleMap(
+              myLocationButtonEnabled: false,
+              initialCameraPosition: CameraPosition(
+                target: LatLng(40.62861224,-73.98956041),
+                zoom: 10,
+              ),
+              markers: _markers.values.toSet(),
+              polylines: polyline,
+            ),
+            AnimatedPositioned(
+                bottom: 0, right: 0, left: 0,
+                duration: Duration(milliseconds: 200),
+                // wrap it inside an Alignment widget to force it to be
+                // aligned at the bottom of the screen
+                child: Align(
+                    alignment: Alignment.bottomCenter,
+                    // wrap it inside a Container so we can provide the
+                    // background white and rounded corners
+                    // and nice breathing room with margins, a fixed height
+                    // and a nice subtle shadow for a depth effect
+                    child: Container(
+                        margin: EdgeInsets.all(20),
+                        height: 90,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(50)),
+                            boxShadow: <BoxShadow>[
+                              BoxShadow(
+                                  blurRadius: 20,
+                                  offset: Offset.zero,
+                                  color: Colors.grey.withOpacity(0.5)
+                              )]
+                        ),
+                        child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                  padding: EdgeInsets.all(15),
+                                  child: Image.asset(
+                                      'assets/redMarker.png',
+                                      width: 50, height: 50)
+                              ),
+                              Expanded(
+                                  child: Container(
+                                      margin: EdgeInsets.only(left: 20),
+                                      child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: <Widget>[
+                                          Text("Origin"),
+                                          Text("Latitude: ${_queryResult == null ? "" : _queryResult[0].latitude.toString()}",
+                                            style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey
+                                            )
+                                          ),
+                                          Text("Longitude: ${_queryResult == null ? "" : _queryResult[0].longitude.toString()}",
+                                            style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey
+                                            )
+                                          ),
+                                        ],
+                                    ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  margin: EdgeInsets.only(left: 20),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Text("Destination"),
+                                      Text("Latitude: ${_queryResult == null ? "" : _queryResult[1].latitude.toString()}",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey
+                                          )
+                                      ),
+                                      Text("Longitude: ${_queryResult == null ? "" : _queryResult[1].longitude.toString()}",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey
+                                          )
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                  padding: EdgeInsets.all(15),
+                                  child: Image.asset(
+                                      'assets/blueMarker.png',
+                                      width: 50, height: 50)
+                              ),  // end of Padding
+                            ]
+                        )
+                    )
+                )
+            )
+          ],
+        )
       ),
     );
   }
@@ -495,43 +603,44 @@ class _tQRState extends State<thirdQueryResult> {
     var request = await httpClient.getUrl(Uri.parse(url));
     var response = await request.close();
     if (response.statusCode == HttpStatus.ok) {
-        var jsonResponse = await response.transform(utf8.decoder).join();
-        var newResponse = jsonResponse.substring(1,jsonResponse.length-1);
-        print(newResponse);
-        var data = json.decode(newResponse);
-        markerList.add(new LatLng(data[0]['latitude'], data[0]['longitude']));
-        print(data[0]['latitude']);
-        print(data[0]['longitude']);
-        print(data[1]['latitude']);
-        print(data[1]['longitude']);
-        markerList.add(new LatLng(data[1]['latitude'], data[1]['longitude']));
+      var jsonResponse = await response.transform(utf8.decoder).join();
+      var newResponse = jsonResponse.substring(1,jsonResponse.length-1);
+      print(newResponse);
+      var data = json.decode(newResponse);
+      markerList.add(new LatLng(data[0]['latitude'], data[0]['longitude']));
+      print(data[0]['latitude']);
+      print(data[0]['longitude']);
+      print(data[1]['latitude']);
+      print(data[1]['longitude']);
+      markerList.add(new LatLng(data[1]['latitude'], data[1]['longitude']));
 
-        routeCoords = await googleMapPolyline.getCoordinatesWithLocation(
-            origin: markerList[0],
-            destination: markerList[1],
-            mode: RouteMode.driving);
-    setState(() {
-      _queryResult = markerList;
-      var i=0;
-      for (final location in _queryResult!) {
-        var index = i.toString();
-        final marker = Marker(
-          markerId: MarkerId(index),
-          position: location,
-        );
-        _markers[index] = marker;
-        i = i+1;
-      }
+      routeCoords = await googleMapPolyline.getCoordinatesWithLocation(
+          origin: markerList[0],
+          destination: markerList[1],
+          mode: RouteMode.driving);
+      setState(() {
+        _queryResult = markerList;
+        var i=0;
+        for (final location in _queryResult) {
+          var index = i.toString();
+          final marker = Marker(
+            markerId: MarkerId(index),
+            position: location,
+            icon: BitmapDescriptor.defaultMarkerWithHue(i == 0 ? BitmapDescriptor.hueRed : BitmapDescriptor.hueBlue),
+          );
+          _markers[index] = marker;
+          i = i+1;
+        }
 
-      polyline.add(Polyline(
-          polylineId: PolylineId('route1'),
-          visible: true,
-          points: routeCoords,
-          width: 4,
-          color: Colors.blue,
-          startCap: Cap.roundCap,
-          endCap: Cap.buttCap));
-    });
+        polyline.add(Polyline(
+            polylineId: PolylineId('route1'),
+            visible: true,
+            points: routeCoords,
+            width: 4,
+            color: Colors.blue,
+            startCap: Cap.roundCap,
+            endCap: Cap.buttCap));
+      });
+    }
   }
-}
 }
