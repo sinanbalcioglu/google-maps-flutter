@@ -9,7 +9,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
   runApp(MaterialApp(
-    title: 'Navigation Basics',
     debugShowCheckedModeBanner: false,
     home: FirstRoute(),
   ));
