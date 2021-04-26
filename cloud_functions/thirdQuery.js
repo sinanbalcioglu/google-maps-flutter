@@ -8,7 +8,7 @@ exports.thirdQuery = (req, res) => {
     endDate = endDate.toString();
   var bigQuery = BigQuery({ projectId: 'PROJECT ID' });
     bigQuery.query({
-        query: 'SELECT PULocationID,DOLocationID,tpep_pickup_datetime,trip_distance from `heroic-muse-310011.taxiDatas.tripData` WHERE tpep_pickup_datetime > '+startDate+' AND tpep_pickup_datetime < '+endDate+' ORDER BY trip_distance DESC LIMIT 1',
+        query: 'SELECT PULocationID,DOLocationID,tpep_pickup_datetime,trip_distance from `PROJECT-ID.taxiDatas.tripData` WHERE tpep_pickup_datetime > '+startDate+' AND tpep_pickup_datetime < '+endDate+' ORDER BY trip_distance DESC LIMIT 1',
         useLegacySql: false
     }).then(function (result) {
         var text = JSON.stringify(result);
@@ -17,7 +17,7 @@ exports.thirdQuery = (req, res) => {
         var puID = json.PULocationID.toString();
         var doID = json.DOLocationID.toString();
         bigQuery.query({
-            query : 'SELECT latitude,longitude FROM `heroic-muse-310011.taxiDatas.taxiZones` WHERE LocationID='+puID+' or LocationID='+doID+' ORDER BY LocationID',
+            query : 'SELECT latitude,longitude FROM `PROJECT-ID.taxiDatas.taxiZones` WHERE LocationID='+puID+' or LocationID='+doID+' ORDER BY LocationID',
             useLegacySql: false
         }).then(function(result){
             return res.status(200).send(result);

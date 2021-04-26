@@ -8,7 +8,7 @@ exports.secondQuery = (req, res) => {
     endDate = endDate.toString();
   var bigQuery = BigQuery({ projectId: 'PROJECT ID' });
     bigQuery.query({
-        query: 'SELECT tpep_pickup_datetime,trip_distance from `heroic-muse-310011.taxiDatas.tripData` WHERE tpep_pickup_datetime > '+startDate+' AND tpep_pickup_datetime < '+endDate+' AND trip_distance != 0 ORDER BY trip_distance ASC LIMIT 5',
+        query: 'SELECT tpep_pickup_datetime,trip_distance from `PROJECT-ID.taxiDatas.tripData` WHERE tpep_pickup_datetime > '+startDate+' AND tpep_pickup_datetime < '+endDate+' AND trip_distance != 0 ORDER BY trip_distance ASC LIMIT 5',
         useLegacySql: false
     }).then(function (result) {
         return res.status(200).send(result);

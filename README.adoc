@@ -14,20 +14,20 @@ https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page[TLC Trip Record Da
 * Taxi Zone Lookup Table
 
 == Cloud Functions
-* http://url[First Query]
-* http://url[Second Query]
-* http://url[Third Query]
+* https://github.com/tayfunkscu/google-maps-flutter/blob/main/cloud_functions/firstQuery.js[First Query]
+* https://github.com/tayfunkscu/google-maps-flutter/blob/main/cloud_functions/secondQuery.js[Second Query]
+* https://github.com/tayfunkscu/google-maps-flutter/blob/main/cloud_functions/thirdQuery.js[Third Query]
 
 == Queries
 
 *1. Top 5 days which has the most passenger count*
 
-image::img/q1.gif[width=200]
+image::img/q1.gif[width=250]
 
 *2. 5 trips that have least distance between selected dates*
 
-image::img/q2.gif[width=200]
+image::img/q2.gif[width=250]
 
 *3. Draw the route on the map of the longest trip on a given day*
 
-image::img/q3.gif[width=200]
+image::img/q3.gif[width=250]
