@@ -28,6 +28,6 @@ image::img/q1.gif[width=250]
 
 image::img/q2.gif[width=250]
 
-*3. Draw the route on the map of the longest trip on a given day*
+*3. Draw the route of the longest trip on a given day on the map *
 
 image::img/q3.gif[width=250]
