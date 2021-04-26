@@ -158,7 +158,7 @@ class firstQueryState extends State<firstQueryResponse> {
   }
 
   _getFirstQueryResult() async {
-    var url = 'https://us-central1-heroic-muse-310011.cloudfunctions.net/firstQuery';
+    var url = 'CLOUD FUNCTION - QUERY 1';
     var httpClient = new HttpClient();
     String result="";
     try {
@@ -340,7 +340,7 @@ class _sQRState extends State<secondQueryResult> {
   _getSecondQueryResult() async {
     var startDate = timestamp1.toString();
     var endDate = timestamp2.toString();
-    var url = 'https://us-central1-heroic-muse-310011.cloudfunctions.net/secondQuery?startDate='+startDate+'&endDate='+endDate;
+    var url = 'CLOUD FUNCTION - QUERY 2';
     var httpClient = new HttpClient();
     String result="";
     try {
@@ -469,7 +469,7 @@ class _tQRState extends State<thirdQueryResult> {
   final Set<Polyline> polyline = {};
 
   List<LatLng> routeCoords;
-  GoogleMapPolyline googleMapPolyline = new GoogleMapPolyline(apiKey: "AIzaSyAN48rdEQUTxb6vdwOEYFsXuKEEEA6odDU");
+  GoogleMapPolyline googleMapPolyline = new GoogleMapPolyline(apiKey: "API KEY");
 
   @override
   Widget build(BuildContext context) {
@@ -497,14 +497,8 @@ class _tQRState extends State<thirdQueryResult> {
             AnimatedPositioned(
                 bottom: 0, right: 0, left: 0,
                 duration: Duration(milliseconds: 200),
-                // wrap it inside an Alignment widget to force it to be
-                // aligned at the bottom of the screen
                 child: Align(
                     alignment: Alignment.bottomCenter,
-                    // wrap it inside a Container so we can provide the
-                    // background white and rounded corners
-                    // and nice breathing room with margins, a fixed height
-                    // and a nice subtle shadow for a depth effect
                     child: Container(
                         margin: EdgeInsets.all(20),
                         height: 90,
@@ -598,7 +592,7 @@ class _tQRState extends State<thirdQueryResult> {
     timestamp2 = timestamp1+86400;
     var startDate = timestamp1.toString();
     var endDate = timestamp2.toString();
-    var url = 'https://us-central1-heroic-muse-310011.cloudfunctions.net/thirdQuery?startDate='+startDate+'&endDate='+endDate;
+    var url = 'CLOUD FUNCTION - QUERY 3';
     var httpClient = new HttpClient();
 
     List<LatLng> markerList = [];
@@ -607,13 +601,8 @@ class _tQRState extends State<thirdQueryResult> {
     if (response.statusCode == HttpStatus.ok) {
       var jsonResponse = await response.transform(utf8.decoder).join();
       var newResponse = jsonResponse.substring(1,jsonResponse.length-1);
-      print(newResponse);
       var data = json.decode(newResponse);
       markerList.add(new LatLng(data[0]['latitude'], data[0]['longitude']));
-      print(data[0]['latitude']);
-      print(data[0]['longitude']);
-      print(data[1]['latitude']);
-      print(data[1]['longitude']);
       markerList.add(new LatLng(data[1]['latitude'], data[1]['longitude']));
 
       routeCoords = await googleMapPolyline.getCoordinatesWithLocation(
